@@ -30,6 +30,7 @@ import com.google.zxing.PlanarYUVLuminanceSource;
 
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * This object wraps the Camera service object and expects to be the only one talking to it. The
@@ -88,7 +89,7 @@ public final class CameraManager {
 
     if (!initialized) {
       initialized = true;
-      configManager.initFromCameraParameters(theCamera);
+      configManager.initFromCameraParameters(theCamera,getFramingRect());
       if (requestedFramingRectWidth > 0 && requestedFramingRectHeight > 0) {
         setManualFramingRect(requestedFramingRectWidth, requestedFramingRectHeight);
         requestedFramingRectWidth = 0;

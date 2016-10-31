@@ -19,6 +19,7 @@ package com.cvtouch.zxing.camera;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Point;
+import android.graphics.Rect;
 import android.hardware.Camera;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -28,6 +29,8 @@ import android.view.WindowManager;
 
 import com.cvtouch.zxing.camera.open.CameraFacing;
 import com.cvtouch.zxing.camera.open.OpenCamera;
+
+import java.util.List;
 
 /**
  * A class which deals with reading, parsing, and setting the camera parameters which are used to
@@ -52,7 +55,7 @@ final class CameraConfigurationManager {
   /**
    * Reads, one time, values from the camera that are needed by the app.
    */
-  void initFromCameraParameters(OpenCamera camera) {
+  void initFromCameraParameters(OpenCamera camera,Rect frame) {
     Camera.Parameters parameters = camera.getCamera().getParameters();
     WindowManager manager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
     Display display = manager.getDefaultDisplay();
@@ -135,6 +138,9 @@ final class CameraConfigurationManager {
     }
     Log.i(TAG, "Preview size on screen: " + previewSizeOnScreen);
   }
+
+
+
 
   void setDesiredCameraParameters(OpenCamera camera, boolean safeMode) {
 
@@ -229,5 +235,39 @@ final class CameraConfigurationManager {
     SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
   }
+
+
+  /**
+   * 找到最合适的预览尺寸，解决必须要一定距离才能识别的问题
+   * @param parameters
+   * @param screenResolution
+   * @param frame 中间框的矩形
+   * @return
+   */
+  private static Point findBestPreviewSizeValue(Camera.Parameters parameters,
+                                                Point screenResolution,Rect frame) {
+    Point point = null;
+    int frameSize = frame.right - frame.left;
+    int discountMax = Integer.MAX_VALUE;
+    int width = 0;
+    int height = 0;
+    List<Camera.Size> supportedPreviewSizes = parameters.getSupportedPreviewSizes();
+    for (Camera.Size size : supportedPreviewSizes) {
+      int discount = size.height - frameSize;
+      if (discount > 0 && size.height * screenResolution.x == screenResolution.y * size.width) {
+        if (discount < discountMax) {
+          discountMax = discount;
+          width = size.width;
+          height = size.height;
+        }
+      }
+    }
+    if (width * height != 0) {
+      point = new Point(width, height);
+    }
+    return point;
+  }
+
+
 
 }

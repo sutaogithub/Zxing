@@ -37,9 +37,11 @@
   <color name="status_text">#ffffffff</color>
   <color name="transparent">#00000000</color>
   <color name="viewfinder_frame">#ff000000</color>
-  <color name="viewfinder_laser">#ffff0000</color>
+  <color name="viewfinder_laser">#88fde001</color>
+  <color name="viewfinder_scan_rect">#fffde001</color>
   <color name="viewfinder_mask">#60000000</color>
   <color name="colorPrimary">#3F51B5</color>
   <color name="colorPrimaryDark">#303F9F</color>
   <color name="colorAccent">#FF4081</color>
+
 </resources>
